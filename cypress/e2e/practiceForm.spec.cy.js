@@ -1,93 +1,59 @@
-const { practice } = require('../pageObjects/practicePage');
+import PracticeFormPage from '../pageObjects/practiceFormPage';
+import userData from '../fixtures/userData.json';
 
-const Practice = new practice();
+describe('DemoQA Practice Form checking', () => {
+  const formPage = new PracticeFormPage();
 
-describe('DemoQA Automation Practice Form', () => {
-
-  Cypress.on('uncaught:exception', (err, runnable) => {
-    return false;
+  beforeEach(() => {
+    formPage.visit();
   });
 
-    beforeEach(() => {
-      cy.visit('https://demoqa.com/automation-practice-form');
-    });
-
-    it('Should be visible logo after downloading page', () => {
-        Practice.logoImg().should('be.visible');
-    })
-  
-    // it('Positive test: Fill and submit form successfully', () => {
-    //   // First & Last Name
-    //   cy.get('#firstName').type('John');
-    //   cy.get('#lastName').type('Doe');
-  
-    //   // Email
-    //   cy.get('#userEmail').type('john.doe@example.com');
-  
-    //   // Gender
-    //   cy.get('label[for="gender-radio-1"]').click();
-  
-    //   // Mobile Number
-    //   cy.get('#userNumber').type('1234567890');
-  
-    //   // Date of Birth
-    //   cy.get('#dateOfBirthInput').click();
-    //   cy.get('.react-datepicker__month-select').select('May');
-    //   cy.get('.react-datepicker__year-select').select('1995');
-    //   cy.get('.react-datepicker__day--015:not(.react-datepicker__day--outside-month)').click();
-  
-    //   // Subjects
-    //   cy.get('#subjectsInput').type('Maths{enter}');
-  
-    //   // Hobbies
-    //   cy.get('label[for="hobbies-checkbox-1"]').click(); // Sports
-    //   cy.get('label[for="hobbies-checkbox-2"]').click(); // Reading
-  
-    //   // Picture Upload
-    //   cy.get('#uploadPicture').selectFile('cypress/fixtures/test-image.jpg');
-  
-    //   // Current Address
-    //   cy.get('#currentAddress').type('123 Main Street');
-  
-    //   // State & City
-    //   cy.get('#state').click().get('#react-select-3-option-0').click();
-    //   cy.get('#city').click().get('#react-select-4-option-0').click();
-  
-    //   // Submit with JS to avoid footer obstruction
-    //   cy.get('#submit').then($btn => {
-    //     $btn[0].click();
-    //   });
-  
-    //   // Modal should be visible
-    //   cy.get('.modal-content').should('be.visible');
-    //   cy.contains('Thanks for submitting the form');
-    // });
-  
-    // it('Negative test: Submit with empty required fields', () => {
-    //   cy.get('#submit').click();
-      
-    //   // Expect required fields to show validation styling
-    //   cy.get('#firstName').should('have.css', 'border-color', 'rgb(220, 53, 69)');
-    //   cy.get('#lastName').should('have.css', 'border-color', 'rgb(220, 53, 69)');
-    //   cy.get('#userEmail').should('have.css', 'border-color', 'rgb(220, 53, 69)');
-    //   cy.get('#userNumber').should('have.css', 'border-color', 'rgb(220, 53, 69)');
-    // });
-  
-    // it('Invalid email validation', () => {
-    //   cy.get('#userEmail').type('invalid-email');
-    //   cy.get('#userEmail:invalid').should('exist');
-    // });
-  
-    // it('Mobile field rejects non-numeric characters', () => {
-    //   cy.get('#userNumber').type('abc123!@#');
-    //   cy.get('#userNumber').should('have.value', '123');
-    // });
-  
-    // it('Date of Birth: Selecting date via picker', () => {
-    //   cy.get('#dateOfBirthInput').click();
-    //   cy.get('.react-datepicker__month-select').select('June');
-    //   cy.get('.react-datepicker__year-select').select('1990');
-    //   cy.get('.react-datepicker__day--010:not(.react-datepicker__day--outside-month)').click();
-    //   cy.get('#dateOfBirthInput').should('have.value', '10 Jun 1990');
-    // });
+  it('Positive test: Fill and submit form successfully', () => {
+    formPage.enterFirstName(userData.firstName);
+    formPage.enterLastName(userData.lastName);
+    formPage.enterEmail(userData.email);
+    formPage.selectGender(userData.gender);
+    formPage.enterMobile(userData.mobile);
+    formPage.selectDateOfBirth(userData.dob.day, userData.dob.month, userData.dob.year);
+    formPage.addSubject(userData.subject);
+    formPage.selectHobbies(userData.hobbies);
+    formPage.uploadPicture(userData.picture);
+    formPage.enterAddress(userData.address);
+    formPage.selectStateAndCity(userData.state, userData.city);
+    formPage.submit();
+    formPage.verifySubmission();
   });
+
+  it('Negative test: Submit with empty required fields and checking border color', () => {
+    formPage.submit();
+    formPage.verifyRequiredFields();
+  });
+
+  it('Invalid email validation', () => {
+    formPage.enterEmail(userData.invalidEmail);
+    formPage.verifyInvalidEmail();
+  });
+
+  it('Mobile field rejects non-numeric characters', () => {
+    formPage.enterMobile(userData.invalidMobile);
+    formPage.verifyMobileValue(userData.invalidMobile);
+  });
+
+  it('Date of Birth: Selecting date via picker', () => {
+    formPage.selectDateOfBirth(userData.verifyDob.day, userData.verifyDob.month, userData.verifyDob.year);
+    formPage.verifyDateOfBirth(userData.verifyDob.expectedDisplay);
+  });
+
+  it('Simple large input check without submitting', () => {
+    const longString = 'A'.repeat(1000);
+  
+    formPage.enterFirstName(longString);
+    formPage.verifyLargeInputValues(longString)
+  });
+
+  it('Verify all UI elements are visible and enabled', () => {
+    formPage.verifyUIElements();
+  });
+  
+});
+ 

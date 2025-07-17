@@ -1,0 +1,27 @@
+{
+    "firstName": "Vitali",
+    "lastName": "Muravei",
+    "email": "vitali.mur@example.com",
+    "gender": "Male",
+    "mobile": "1234567890",
+    "dob": {
+      "day": "15",
+      "month": "May",
+      "year": "1998"
+    },
+    "subject": "Maths",
+    "hobbies": ["Sports", "Reading"],
+    "picture": "test-image.jpg",
+    "address": "123 Main Street",
+    "state": "NCR",
+    "city": "Delhi",
+    "invalidEmail": "invalid-email",
+    "invalidMobile": "abc123!@#",
+    "expectedSanitizedMobile": "123",
+    "verifyDob": {
+      "day": "10",
+      "month": "June",
+      "year": "1990",
+      "expectedDisplay": "10 Jun 1990"
+    }
+  }
